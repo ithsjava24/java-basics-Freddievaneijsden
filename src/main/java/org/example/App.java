@@ -1,74 +1,95 @@
 package org.example;
 
-import java.util.Arrays;
-import java.util.InputMismatchException;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
 public class App {
 
-    public static Scanner scanner = new Scanner(System.in);
+    public static Scanner scanner;
+
+    public App() {
+        scanner = new Scanner(System.in);
+    }
 
     public static void main(String[] args) {
+        new App();
 
-        int [] pricePerHour = new int[5];
+        int[] pricePerHour = new int[24];
+        //int [] pricePerHour = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
         boolean meny = true;
         do {
-            System.out.println("Elpriser");
-            System.out.println("========");
-            System.out.println("1. Inmatning");
-            System.out.println("2. Min, Max och Medel");
-            System.out.println("3. Sortera");
-            System.out.println("4. Bästa Laddningstid (4h)");
-            System.out.println("e. Avsluta");
+            System.out.print("Elpriser\n"); //använd \n efter texten för att byta rad.
+            System.out.print("========\n");
+            System.out.print("1. Inmatning\n");
+            System.out.print("2. Min, Max och Medel\n");
+            System.out.print("3. Sortera\n");
+            System.out.print("4. Bästa Laddningstid (4h)\n");
+            System.out.print("e. Avsluta\n");
 
             String menyOption = "0";
             try {
                 menyOption = scanner.nextLine();
-            }
-            catch (NoSuchElementException e) {
-                System.out.println("NoSuchElementException e");
+            } catch (NoSuchElementException e) {
+                System.out.print("NoSuchElementException e\n");
             }
 
             switch (menyOption) {
                 case "1":
-                    System.out.println("kW/h: ");
-                    //Saves price per hour from user in array
-                    for (int i = 0; i < pricePerHour.length; i++) {
-                        if (i<9) {
-                            System.out.println("Pris i öre mellan " + "0" + i + "-0" + (i + 1));
-                            pricePerHour[i] = scanner.nextInt();
-                        }
-                        if (i>9) {
-                            System.out.println("Pris i öre mellan " + i + "-" + (i + 1));
-                            pricePerHour[i] = scanner.nextInt();
-                        }
-                    }
-
+                    input(pricePerHour);
                     break;
                 case "2":
-                    int min = pricePerHour[0];
-                    for (int i = 0; i < pricePerHour.length; i++) {
-                        if (pricePerHour[i]<min) {
-                            min = pricePerHour[i];
-                        }
-                    }
-                    System.out.println(Arrays.toString(pricePerHour));
-                    System.out.println("Lägsta pris: 02-03, " + min + " öre/kWh");
-                    System.out.println("Högsta pris: 00-01, 100 öre/kWh");
-                    System.out.println("Medelpris: 13,38 öre/kWh");
+                    minMaxMean(pricePerHour);
                     break;
                 case "3":
-                    System.out.println("Sortera");
+                    sorted(pricePerHour);
                     break;
                 case "4":
-                    System.out.println("Bästa");
+
+                    //4 billigaste värdena i följd,
+                    int [] position = new int[pricePerHour.length];
+                    for (int i = 0; i < pricePerHour.length; i++) {
+                        position[i] = i;
+
+                    }
+                    for (int i = 0; i < pricePerHour.length; i++) {
+                        for (int j = 1; j < pricePerHour.length - i; j++) {
+                            if (pricePerHour[j - 1] < pricePerHour[j]) {
+
+                                int temp = pricePerHour[j];
+                                pricePerHour[j] = pricePerHour[j - 1];
+                                pricePerHour[j - 1] = temp;
+
+                                int tempPosition = position[j];
+                                position[j] = position[j - 1];
+                                position[j - 1] = tempPosition;
+                            }
+                        }
+                    }
+                    //System.out.println(Arrays.toString(pricePerHour));
+                    //System.out.println(Arrays.toString(position));
+
+
+                    float lowestPrice = Integer.MAX_VALUE;
+                    int lowestPosition = 0;
+                    for (int i = 0; i < pricePerHour.length-3; i++) {
+                    int sum = pricePerHour[i] + pricePerHour[i+1] + pricePerHour[i+2] + pricePerHour[i+3];
+                        if (lowestPrice > sum) {
+                            lowestPrice = sum;
+                            lowestPosition = i-1; //vad händer här?
+                        }
+                    }
+                   // System.out.println(lowestPrice);
+                    float averagePrice = lowestPrice/4;
+                    System.out.printf("""
+                            Påbörja laddning klockan %02d
+                            Medelpris 4h: %.1f öre/kWh
+                            """, lowestPosition, averagePrice);
                     break;
                 case "e", "E":
                     meny = false;
                     break;
                 default:
-                    System.out.println("Invalid option");
+                    System.out.print("Invalid option\n");
 
             }
 
@@ -76,4 +97,65 @@ public class App {
 
     }
 
+    private static void input(int[] pricePerHour) {
+        for (int i = 0; i < pricePerHour.length; i++) {
+            pricePerHour[i] = scanner.nextInt();
+            scanner.nextLine();
+        }
+    }
+
+    static void minMaxMean(int[] pricePerHour) {
+        int min = pricePerHour[0];
+        int lowestPricePosition = 0;
+        for (int i = 0; i < pricePerHour.length; i++) {
+            if (pricePerHour[i] < min) {
+                min = pricePerHour[i];
+                lowestPricePosition = i;
+            }
+        }
+        int max = pricePerHour[0];
+        int maxPricePosition = 0;
+        for (int i = 0; i < pricePerHour.length; i++) {
+            if (pricePerHour[i] > max) {
+                max = pricePerHour[i];
+                maxPricePosition = i;
+            }
+        }
+
+        float sum = 0;
+        for (int i = 0; i < pricePerHour.length; i++) {
+            sum += pricePerHour[i];
+        }
+        float averagePrice = sum / pricePerHour.length;
+
+        System.out.printf("Lägsta pris: %02d-%02d, %d öre/kWh\n", lowestPricePosition, lowestPricePosition + 1, min);
+        System.out.printf("Högsta pris: %02d-%02d, %d öre/kWh\n", maxPricePosition, maxPricePosition + 1, max);
+        System.out.printf("Medelpris: %.2f öre/kWh\n", averagePrice);
+    }
+
+    static void sorted(int[] pricePerHour) {
+        int [] position = new int[pricePerHour.length];
+        for (int i = 0; i < pricePerHour.length; i++) {
+            position[i] = i;
+
+        }
+        for (int i = 0; i < pricePerHour.length; i++) {
+            for (int j = 1; j < pricePerHour.length - i; j++) {
+                if (pricePerHour[j - 1] < pricePerHour[j]) {
+
+                    int temp = pricePerHour[j];
+                    pricePerHour[j] = pricePerHour[j - 1];
+                    pricePerHour[j - 1] = temp;
+
+                    int tempPosition = position[j];
+                    position[j] = position[j - 1];
+                    position[j - 1] = tempPosition;
+                }
+            }
+        }
+        for (int i = 0; i < pricePerHour.length-1; i++) {
+            System.out.printf("%02d-%02d %d öre\n", position[i], position[i] + 1 , pricePerHour[i]);
+        }
+    }
 }
+
