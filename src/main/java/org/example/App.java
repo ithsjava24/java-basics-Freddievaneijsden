@@ -1,5 +1,6 @@
 package org.example;
 
+import java.util.Locale;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
 
@@ -12,6 +13,7 @@ public class App {
     }
 
     public static void main(String[] args) {
+        Locale.setDefault(Locale.of("SV", "SE"));
         new App();
 
         int[] pricePerHour = new int[24];
@@ -46,7 +48,7 @@ public class App {
                 case "4":
 
                     //4 billigaste värdena i följd,
-                    int [] position = new int[pricePerHour.length];
+                    int[] position = new int[pricePerHour.length];
                     for (int i = 0; i < pricePerHour.length; i++) {
                         position[i] = i;
 
@@ -71,15 +73,15 @@ public class App {
 
                     float lowestPrice = Integer.MAX_VALUE;
                     int lowestPosition = 0;
-                    for (int i = 0; i < pricePerHour.length-3; i++) {
-                    int sum = pricePerHour[i] + pricePerHour[i+1] + pricePerHour[i+2] + pricePerHour[i+3];
+                    for (int i = 0; i < pricePerHour.length - 3; i++) {
+                        int sum = pricePerHour[i] + pricePerHour[i + 1] + pricePerHour[i + 2] + pricePerHour[i + 3];
                         if (lowestPrice > sum) {
                             lowestPrice = sum;
-                            lowestPosition = i-1; //vad händer här?
+                            lowestPosition = i - 1; //vad händer här?
                         }
                     }
-                   // System.out.println(lowestPrice);
-                    float averagePrice = lowestPrice/4;
+                    // System.out.println(lowestPrice);
+                    float averagePrice = lowestPrice / 4;
                     System.out.printf("""
                             Påbörja laddning klockan %02d
                             Medelpris 4h: %.1f öre/kWh
@@ -97,7 +99,7 @@ public class App {
 
     }
 
-    private static void input(int[] pricePerHour) {
+    static void input(int[] pricePerHour) {
         for (int i = 0; i < pricePerHour.length; i++) {
             pricePerHour[i] = scanner.nextInt();
             scanner.nextLine();
@@ -134,7 +136,7 @@ public class App {
     }
 
     static void sorted(int[] pricePerHour) {
-        int [] position = new int[pricePerHour.length];
+        int[] position = new int[pricePerHour.length];
         for (int i = 0; i < pricePerHour.length; i++) {
             position[i] = i;
 
@@ -153,8 +155,8 @@ public class App {
                 }
             }
         }
-        for (int i = 0; i < pricePerHour.length-1; i++) {
-            System.out.printf("%02d-%02d %d öre\n", position[i], position[i] + 1 , pricePerHour[i]);
+        for (int i = 0; i < pricePerHour.length - 1; i++) {
+            System.out.printf("%02d-%02d %d öre\n", position[i], position[i] + 1, pricePerHour[i]);
         }
     }
 }
