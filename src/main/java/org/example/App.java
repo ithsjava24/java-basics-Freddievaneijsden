@@ -26,6 +26,7 @@ public class App {
             System.out.print("2. Min, Max och Medel\n");
             System.out.print("3. Sortera\n");
             System.out.print("4. Bästa Laddningstid (4h)\n");
+            System.out.print("5. Visualisering\n");
             System.out.print("e. Avsluta\n");
 
             String menyOption = "0";
@@ -86,6 +87,9 @@ public class App {
                             Påbörja laddning klockan %02d
                             Medelpris 4h: %.1f öre/kWh
                             """, lowestPosition, averagePrice);
+                    break;
+                case "5":
+                    visualisering(pricePerHour);
                     break;
                 case "e", "E":
                     meny = false;
@@ -158,6 +162,69 @@ public class App {
         for (int i = 0; i < pricePerHour.length - 1; i++) {
             System.out.printf("%02d-%02d %d öre\n", position[i], position[i] + 1, pricePerHour[i]);
         }
+    }
+
+    static void visualisering(int[] pricePerHour) {
+        int[] position = new int[pricePerHour.length];
+        for (int i = 0; i < pricePerHour.length; i++) {
+            position[i] = i;
+        }
+
+        for (int i = 0; i < pricePerHour.length; i++) {
+            for (int j = 1; j < pricePerHour.length - i; j++) {
+                if (pricePerHour[j - 1] < pricePerHour[j]) {
+
+                    int temp = pricePerHour[j];
+                    pricePerHour[j] = pricePerHour[j - 1];
+                    pricePerHour[j - 1] = temp;
+
+                    int tempPosition = position[j];
+                    position[j] = position[j - 1];
+                    position[j - 1] = tempPosition;
+                }
+            }
+        }
+
+        int max = pricePerHour[0];
+        int min = pricePerHour[0];
+        for (int k : pricePerHour) {
+            if (k < min) {
+                min = k;
+            }
+            if (k > max) {
+                max = k;
+            }
+        }
+        int rows = 6; //antal rows som x skrivs ut på
+        // Scale the price to the available rows, ensuring min fills 1 row
+        double priceRange = max - min;
+        double difference = priceRange/(rows - 1f);
+        for (int i = rows; i > 0; i--) {
+            int printX;
+            if (i == 1) printX = min;
+            else printX = (int) (max - (rows - i) * difference);
+            if (i == rows) {
+                System.out.printf("%3d|", max);
+            }
+            else if (i == 1) {
+                System.out.printf("%3d|", min);
+            }
+            else {
+                    System.out.print("   |");
+                }
+            for (int j = 0; j < 24; j++) {
+                int currentPrice = pricePerHour[j];
+                    if (currentPrice >= printX) {
+                        System.out.print("  x");  // Print x in the correct row
+                    } else {
+                        System.out.print("   ");  // Print spaces for empty spots
+                    }
+
+            }
+            System.out.print("\n");
+        }
+        System.out.print("   |------------------------------------------------------------------------\n");
+        System.out.print("   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23\n");
     }
 }
 
