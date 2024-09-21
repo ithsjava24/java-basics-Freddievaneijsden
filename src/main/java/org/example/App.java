@@ -17,10 +17,9 @@ public class App {
         new App();
 
         int[] pricePerHour = new int[24];
-        //int [] pricePerHour = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24};
         boolean meny = true;
         do {
-            System.out.print("Elpriser\n"); //använd \n efter texten för att byta rad.
+            System.out.print("Elpriser\n");
             System.out.print("========\n");
             System.out.print("1. Inmatning\n");
             System.out.print("2. Min, Max och Medel\n");
@@ -47,46 +46,7 @@ public class App {
                     sorted(pricePerHour);
                     break;
                 case "4":
-
-                    //4 billigaste värdena i följd,
-                    int[] position = new int[pricePerHour.length];
-                    for (int i = 0; i < pricePerHour.length; i++) {
-                        position[i] = i;
-
-                    }
-                    for (int i = 0; i < pricePerHour.length; i++) {
-                        for (int j = 1; j < pricePerHour.length - i; j++) {
-                            if (pricePerHour[j - 1] < pricePerHour[j]) {
-
-                                int temp = pricePerHour[j];
-                                pricePerHour[j] = pricePerHour[j - 1];
-                                pricePerHour[j - 1] = temp;
-
-                                int tempPosition = position[j];
-                                position[j] = position[j - 1];
-                                position[j - 1] = tempPosition;
-                            }
-                        }
-                    }
-                    //System.out.println(Arrays.toString(pricePerHour));
-                    //System.out.println(Arrays.toString(position));
-
-
-                    float lowestPrice = Integer.MAX_VALUE;
-                    int lowestPosition = 0;
-                    for (int i = 0; i < pricePerHour.length - 3; i++) {
-                        int sum = pricePerHour[i] + pricePerHour[i + 1] + pricePerHour[i + 2] + pricePerHour[i + 3];
-                        if (lowestPrice > sum) {
-                            lowestPrice = sum;
-                            lowestPosition = i - 1; //vad händer här?
-                        }
-                    }
-                    // System.out.println(lowestPrice);
-                    float averagePrice = lowestPrice / 4;
-                    System.out.printf("""
-                            Påbörja laddning klockan %02d
-                            Medelpris 4h: %.1f öre/kWh
-                            """, lowestPosition, averagePrice);
+                    bestHours(pricePerHour);
                     break;
                 case "5":
                     visualisering(pricePerHour);
@@ -96,11 +56,45 @@ public class App {
                     break;
                 default:
                     System.out.print("Invalid option\n");
-
             }
-
         } while (meny);
+    }
 
+    static void bestHours(int[] pricePerHour) {
+        int[] position = new int[pricePerHour.length];
+        for (int i = 0; i < pricePerHour.length; i++) {
+            position[i] = i;
+
+        }
+        for (int i = 0; i < pricePerHour.length; i++) {
+            for (int j = 1; j < pricePerHour.length - i; j++) {
+                if (pricePerHour[j - 1] < pricePerHour[j]) {
+
+                    int temp = pricePerHour[j];
+                    pricePerHour[j] = pricePerHour[j - 1];
+                    pricePerHour[j - 1] = temp;
+
+                    int tempPosition = position[j];
+                    position[j] = position[j - 1];
+                    position[j - 1] = tempPosition;
+                }
+            }
+        }
+
+        float lowestPrice = Integer.MAX_VALUE;
+        int lowestPosition = 0;
+        for (int i = 0; i < pricePerHour.length - 3; i++) {
+            int sum = pricePerHour[i] + pricePerHour[i + 1] + pricePerHour[i + 2] + pricePerHour[i + 3];
+            if (lowestPrice > sum) {
+                lowestPrice = sum;
+                lowestPosition = i;
+            }
+        }
+        float averagePrice = lowestPrice / 4;
+        System.out.printf("""
+                Påbörja laddning klockan %02d
+                Medelpris 4h: %.1f öre/kWh
+                """, lowestPosition - 1, averagePrice);
     }
 
     static void input(int[] pricePerHour) {
@@ -129,8 +123,8 @@ public class App {
         }
 
         float sum = 0;
-        for (int i = 0; i < pricePerHour.length; i++) {
-            sum += pricePerHour[i];
+        for (int j : pricePerHour) {
+            sum += j;
         }
         float averagePrice = sum / pricePerHour.length;
 
@@ -195,8 +189,8 @@ public class App {
                 max = k;
             }
         }
-        int rows = 6; //antal rows som x skrivs ut på
-        // Scale the price to the available rows, ensuring min fills 1 row
+
+        int rows = 6;
         double priceRange = max - min;
         double difference = priceRange/(rows - 1f);
         for (int i = rows; i > 0; i--) {
@@ -215,9 +209,9 @@ public class App {
             for (int j = 0; j < 24; j++) {
                 int currentPrice = pricePerHour[j];
                     if (currentPrice >= printX) {
-                        System.out.print("  x");  // Print x in the correct row
+                        System.out.print("  x");
                     } else {
-                        System.out.print("   ");  // Print spaces for empty spots
+                        System.out.print("   ");
                     }
 
             }
@@ -227,4 +221,3 @@ public class App {
         System.out.print("   | 00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23\n");
     }
 }
-
